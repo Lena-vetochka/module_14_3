@@ -14,17 +14,17 @@ api = ''
 bot = Bot(token = api)
 dp = Dispatcher(bot, storage = MemoryStorage())
 
-# kb = ReplyKeyboardMarkup(resize_keyboard=True)
-# button_ = KeyboardButton(text = 'Рассчитать')
-# button1_ = KeyboardButton(text = 'Информация')
-# button2_ = KeyboardButton(text = 'Купить')
-# kb.row(button_, button1_)
-# kb.row(button2_)
-#
-# kb2 = InlineKeyboardMarkup(resize_keyboard = True)
-# button = InlineKeyboardButton(text = 'Рассчитать норму калорий', callback_data= 'calories')
-# button2 = InlineKeyboardButton(text = 'Формулы расчёта', callback_data= 'formulas')
-# kb2.row(button, button2)
+kb = ReplyKeyboardMarkup(resize_keyboard=True)
+button_ = KeyboardButton(text = 'Р Р°СЃСЃС‡РёС‚Р°С‚СЊ')
+button1_ = KeyboardButton(text = 'РРЅС„РѕСЂРјР°С†РёСЏ')
+button2_ = KeyboardButton(text = 'РљСѓРїРёС‚СЊ')
+kb.row(button_, button1_)
+kb.row(button2_)
+
+kb2 = InlineKeyboardMarkup(resize_keyboard = True)
+button = InlineKeyboardButton(text = 'Р Р°СЃСЃС‡РёС‚Р°С‚СЊ РЅРѕСЂРјСѓ РєР°Р»РѕСЂРёР№', callback_data= 'calories')
+button2 = InlineKeyboardButton(text = 'Р¤РѕСЂРјСѓР»С‹ СЂР°СЃС‡С‘С‚Р°', callback_data= 'formulas')
+kb2.row(button, button2)
 
 kb3 = InlineKeyboardMarkup(
     inline_keyboard= [
@@ -36,91 +36,90 @@ kb3 = InlineKeyboardMarkup(
 )
 
 
-class UserState(StatesGroup):  #собираем данные
+class UserState(StatesGroup):  #СЃРѕР±РёСЂР°РµРј РґР°РЅРЅС‹Рµ
     age = State()
     growth = State()
     weight = State()
 
 
-# @dp.message_handler(commands= ['start'])
-# async def start_message(message):
-#     await message.answer('Привет! Я бот помогающий здоровью.', reply_markup = kb )
-#
-#
-# @dp.message_handler(text = 'Рассчитать')
-# async def main_menu(message):
-#     await message.answer('Выберите опцию:', reply_markup = kb2)
+@dp.message_handler(commands= ['start'])
+async def start_message(message):
+    await message.answer('РџСЂРёРІРµС‚! РЇ Р±РѕС‚ РїРѕРјРѕРіР°СЋС‰РёР№ Р·РґРѕСЂРѕРІСЊСЋ.', reply_markup = kb )
 
 
-@dp.message_handler(text = 'Купить')
+@dp.message_handler(text = 'Р Р°СЃСЃС‡РёС‚Р°С‚СЊ')
+async def main_menu(message):
+    await message.answer('Р’С‹Р±РµСЂРёС‚Рµ РѕРїС†РёСЋ:', reply_markup = kb2)
+
+
+@dp.message_handler(text = 'РљСѓРїРёС‚СЊ')
 async def get_buying_list(message):
     for number in range(1, 5):
-        await message.answer(f'Название: Product{number} | Описание: описание {number} | Цена: {number * 100}')
+        await message.answer(f'РќР°Р·РІР°РЅРёРµ: Product{number} | РћРїРёСЃР°РЅРёРµ: РѕРїРёСЃР°РЅРёРµ {number} | Р¦РµРЅР°: {number * 100}')
         with open(f'bot_selling_games/{number}.jpg', 'rb') as img:
             await message.answer_photo(img)
-    await message.answer('Выберите продукт для покупки:', reply_markup= kb3)
+    await message.answer('Р’С‹Р±РµСЂРёС‚Рµ РїСЂРѕРґСѓРєС‚ РґР»СЏ РїРѕРєСѓРїРєРё:', reply_markup= kb3)
 
 
 @dp.callback_query_handler(text = 'product_buying')
 async def send_confirm_message(call):
-    await call.message.answer('Вы успешно приобрели продукт!')
+    await call.message.answer('Р’С‹ СѓСЃРїРµС€РЅРѕ РїСЂРёРѕР±СЂРµР»Рё РїСЂРѕРґСѓРєС‚!')
     await call.answer()
 
 
-# @dp.callback_query_handler(text= 'formulas')
-# async def get_formulas(call):
-#     await call.message.answer('10 x вес (кг) + 6,25 x рост (см) – 5 x возраст (г) – 161')
-#     await call.answer()
-#
-#
-# @dp.callback_query_handler(text = 'calories')
-# async def set_age(call):
-#     await call.message.answer('Введите свой возраст:')
-#     await UserState.age.set()   #запись возраста
-#
-#
-# @dp.message_handler()
-# async def all_message(message):
-#     await message.answer('Введите команду /start, чтобы начать общение.')
-#
-#
-# @dp.message_handler(state = UserState.age)
-# async def set_growth(message, state):
-#     try:
-#         await state.update_data(age = float(message.text))
-#     except:
-#         await message.answer('Введите число, свой возраст')
-#         return set_age()
-#     await message.answer('Введите свой рост в см:', )
-#     await UserState.growth.set()
-#
-#
-# @dp.message_handler(state = UserState.growth)
-# async def set_weight(message, state):
-#     try:
-#         await state.update_data(growth = float(message.text))
-#     except:
-#         await message.answer('Введите число, свой рост')
-#         return set_growth()
-#     await message.answer('Введите свой вес:')
-#     await UserState.weight.set()
-#
-#
-# @dp.message_handler(state = UserState.weight)
-# async def send_calories(message, state):
-#     try:
-#         await state.update_data(weight =float(message.text))
-#     except:
-#         await message.answer('Введите число, свой вес')
-#         return send_calories()
-#     data = await state.get_data()
-#     calories = (10 * data['weight'] + 6.25 * data['growth'] -
-#                 5 * data['age'] - 161)
-#     await message.answer(f'Ваша норма калорий {calories}/сутки')
-#     await state.finish()
+@dp.callback_query_handler(text= 'formulas')
+async def get_formulas(call):
+    await call.message.answer('10 x РІРµСЃ (РєРі) + 6,25 x СЂРѕСЃС‚ (СЃРј) вЂ“ 5 x РІРѕР·СЂР°СЃС‚ (Рі) вЂ“ 161')
+    await call.answer()
+
+
+@dp.callback_query_handler(text = 'calories')
+async def set_age(call):
+    await call.message.answer('Р’РІРµРґРёС‚Рµ СЃРІРѕР№ РІРѕР·СЂР°СЃС‚:')
+    await UserState.age.set()   #Р·Р°РїРёСЃСЊ РІРѕР·СЂР°СЃС‚Р°
+
+
+@dp.message_handler()
+async def all_message(message):
+    await message.answer('Р’РІРµРґРёС‚Рµ РєРѕРјР°РЅРґСѓ /start, С‡С‚РѕР±С‹ РЅР°С‡Р°С‚СЊ РѕР±С‰РµРЅРёРµ.')
+
+
+@dp.message_handler(state = UserState.age)
+async def set_growth(message, state):
+    try:
+        await state.update_data(age = float(message.text))
+    except:
+        await message.answer('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ, СЃРІРѕР№ РІРѕР·СЂР°СЃС‚')
+        return set_age()
+    await message.answer('Р’РІРµРґРёС‚Рµ СЃРІРѕР№ СЂРѕСЃС‚ РІ СЃРј:', )
+    await UserState.growth.set()
+
+
+@dp.message_handler(state = UserState.growth)
+async def set_weight(message, state):
+    try:
+        await state.update_data(growth = float(message.text))
+    except:
+        await message.answer('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ, СЃРІРѕР№ СЂРѕСЃС‚')
+        return set_growth()
+    await message.answer('Р’РІРµРґРёС‚Рµ СЃРІРѕР№ РІРµСЃ:')
+    await UserState.weight.set()
+
+
+@dp.message_handler(state = UserState.weight)
+async def send_calories(message, state):
+    try:
+        await state.update_data(weight =float(message.text))
+    except:
+        await message.answer('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ, СЃРІРѕР№ РІРµСЃ')
+        return send_calories()
+    data = await state.get_data()
+    calories = (10 * data['weight'] + 6.25 * data['growth'] -
+                5 * data['age'] - 161)
+    await message.answer(f'Р’Р°С€Р° РЅРѕСЂРјР° РєР°Р»РѕСЂРёР№ {calories}/СЃСѓС‚РєРё')
+    await state.finish()
 
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates= True)
-
 
